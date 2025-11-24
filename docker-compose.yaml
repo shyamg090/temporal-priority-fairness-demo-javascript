@@ -1,0 +1,48 @@
+services:
+  temporal:
+    image: temporalio/auto-setup:latest ## run at the beginning to setup the db
+    container_name: temporal
+    environment:
+      # Use postgres for your external DB
+      DB: postgres12               # Temporal DB type
+      DB_PORT: 5432               # Port of your external Postgres
+      POSTGRES_USER: postgres    # your external DB username
+      POSTGRES_PWD: shyam # your external DB password
+      POSTGRES_SEEDS: host.docker.internal   # host of your external Postgres - add extenal host name fot this is used 
+      DBNAME: temporal-postgresql        # name of the database Temporal should use
+    # Optional SSL mode (required for Neon)
+    # POSTGRES_TLS: true
+    ports:
+      - "7233:7233"
+    networks:
+      - temporal-net
+
+  temporal-ui:
+    image: temporalio/ui:latest
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+    ports:
+      - "8080:8080"
+    networks:
+      - temporal-net
+
+  temporal-admin-tools:
+    image: temporalio/admin-tools:latest
+    container_name: temporal-admin-tools
+    depends_on:
+      - temporal
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CLI_ADDRESS: temporal:7233
+    stdin_open: true
+    tty: true
+    networks:
+      - temporal-net
+
+networks:
+  temporal-net:
+    driver: bridge
+      
