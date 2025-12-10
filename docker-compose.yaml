@@ -1,7 +1,7 @@
 services:
   temporal:
     image: temporalio/auto-setup:latest ## run at the beginning to setup the db
-    container_name: temporal
+    container_name: temporal-priority-poc
     environment:
       # Use postgres for your external DB
       DB: postgres12               # Temporal DB type
@@ -19,11 +19,11 @@ services:
 
   temporal-ui:
     image: temporalio/ui:latest
-    container_name: temporal-ui
+    container_name: temporal-priority-poc-ui
     depends_on:
       - temporal
     environment:
-      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_ADDRESS: temporal-priority-poc:7233
     ports:
       - "8080:8080"
     networks:
@@ -31,7 +31,7 @@ services:
 
   temporal-admin-tools:
     image: temporalio/admin-tools:latest
-    container_name: temporal-admin-tools
+    container_name: temporal-priority-poc-admin-tools
     depends_on:
       - temporal
     environment:
